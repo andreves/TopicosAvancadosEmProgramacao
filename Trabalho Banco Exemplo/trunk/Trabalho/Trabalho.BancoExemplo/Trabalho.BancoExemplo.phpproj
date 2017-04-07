@@ -25,6 +25,7 @@
     <Compile Include="error_login.php" />
     <Compile Include="functios.php" />
     <Compile Include="login.php" />
+    <Compile Include="logout.php" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="css\" />
