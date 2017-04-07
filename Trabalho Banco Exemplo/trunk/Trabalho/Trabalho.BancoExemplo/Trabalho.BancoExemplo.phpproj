@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Name>Trabalho.BancoExemplo</Name>
+    <ProjectGuid>7329233f-473d-497b-a576-e98221c8b1b0</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>
+    </RootNamespace>
+    <ProjectTypeGuids>{A0786B88-2ADB-4C21-ABE8-AA2D79766269}</ProjectTypeGuids>
+    <AssemblyName>Trabalho.BancoExemplo</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <IncludeDebugInformation>true</IncludeDebugInformation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <IncludeDebugInformation>false</IncludeDebugInformation>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="bancos.php" />
+    <Compile Include="banco_criar.php" />
+    <Compile Include="banco_excluir.php" />
+    <Compile Include="conexao.php" />
+    <Compile Include="dashboard.php" />
+    <Compile Include="error_login.php" />
+    <Compile Include="functios.php" />
+    <Compile Include="login.php" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="css\" />
+    <Folder Include="fonts\" />
+    <Folder Include="img\" />
+    <Folder Include="img\background\" />
+    <Folder Include="img\faces\" />
+    <Folder Include="img\tables\" />
+    <Folder Include="js\" />
+    <Folder Include="sass\" />
+    <Folder Include="sass\paper\" />
+    <Folder Include="sass\paper\mixins\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="css\animate.min.css" />
+    <Content Include="css\bootstrap.min.css" />
+    <Content Include="css\demo.css" />
+    <Content Include="css\paper-dashboard.css" />
+    <Content Include="css\themify-icons.css" />
+    <Content Include="fonts\themify.eot" />
+    <Content Include="fonts\themify.svg" />
+    <Content Include="fonts\themify.ttf" />
+    <Content Include="fonts\themify.woff" />
+    <Content Include="img\apple-icon.png" />
+    <Content Include="img\background.jpg" />
+    <Content Include="img\faces\face-0.jpg" />
+    <Content Include="img\faces\face-1.jpg" />
+    <Content Include="img\faces\face-2.jpg" />
+    <Content Include="img\faces\face-3.jpg" />
+    <Content Include="img\favicon.png" />
+    <Content Include="img\new_logo.png" />
+    <Content Include="img\tim_80x80.png" />
+    <Content Include="js\bootstrap-checkbox-radio.js" />
+    <Content Include="js\bootstrap-notify.js" />
+    <Content Include="js\bootstrap.min.js" />
+    <Content Include="js\chartist.min.js" />
+    <Content Include="js\demo.js" />
+    <Content Include="js\jquery-1.10.2.js" />
+    <Content Include="js\paper-dashboard.js" />
+    <Content Include="sass\paper-dashboard.scss" />
+    <Content Include="sass\paper\mixins\_buttons.scss" />
+    <Content Include="sass\paper\mixins\_cards.scss" />
+    <Content Include="sass\paper\mixins\_chartist.scss" />
+    <Content Include="sass\paper\mixins\_icons.scss" />
+    <Content Include="sass\paper\mixins\_inputs.scss" />
+    <Content Include="sass\paper\mixins\_labels.scss" />
+    <Content Include="sass\paper\mixins\_navbars.scss" />
+    <Content Include="sass\paper\mixins\_sidebar.scss" />
+    <Content Include="sass\paper\mixins\_tabs.scss" />
+    <Content Include="sass\paper\mixins\_transparency.scss" />
+    <Content Include="sass\paper\mixins\_vendor-prefixes.scss" />
+    <Content Include="sass\paper\_alerts.scss" />
+    <Content Include="sass\paper\_buttons.scss" />
+    <Content Include="sass\paper\_cards.scss" />
+    <Content Include="sass\paper\_chartist.scss" />
+    <Content Include="sass\paper\_checkbox-radio.scss" />
+    <Content Include="sass\paper\_dropdown.scss" />
+    <Content Include="sass\paper\_footers.scss" />
+    <Content Include="sass\paper\_inputs.scss" />
+    <Content Include="sass\paper\_misc.scss" />
+    <Content Include="sass\paper\_mixins.scss" />
+    <Content Include="sass\paper\_navbars.scss" />
+    <Content Include="sass\paper\_responsive.scss" />
+    <Content Include="sass\paper\_sidebar-and-main-panel.scss" />
+    <Content Include="sass\paper\_tables.scss" />
+    <Content Include="sass\paper\_typography.scss" />
+    <Content Include="sass\paper\_variables.scss" />
+  </ItemGroup>
+</Project>
