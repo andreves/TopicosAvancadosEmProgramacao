@@ -1,6 +1,28 @@
 <?php
 
+session_start();
+
+if (!isset($_SESSION['usuarioID']) OR !isset($_SESSION['usuarioNome'])) {
+    header("Location:login.php");
+}
+
 include 'conexao.php';
+
+$sql = 'SELECT COUNT(*) FROM BANCO WHERE SITUACAO = 1';
+$count_banco = mysql_query($sql, $link);
+$row_banco = mysql_fetch_row($count_banco);
+
+$sql = 'SELECT COUNT(*) FROM AGENCIA WHERE SITUACAO = 1';
+$count_agencia = mysql_query($sql, $link);
+$row_agencia = mysql_fetch_row($count_agencia);
+
+$sql = 'SELECT COUNT(*) FROM CONTA WHERE SITUACAO = 1';
+$count_conta = mysql_query($sql, $link);
+$row_conta = mysql_fetch_row($count_conta);
+
+$sql = 'SELECT COUNT(*) FROM CLIENTE WHERE SITUACAO = 1';
+$count_cliente = mysql_query($sql, $link);
+$row_cliente = mysql_fetch_row($count_cliente);
 
 ?>
 
@@ -55,33 +77,39 @@ include 'conexao.php';
                         </a>
                     </li>
                     <li>
-                        <a href="user.html">
+                        <a href="agencias.php">
+                            <i class="ti-view-list-alt"></i>
+                            <p>Agências</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="contas.php">
+                            <i class="ti-view-list-alt"></i>
+                            <p>Contas</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="clientes.php">
                             <i class="ti-user"></i>
-                            <p>User Profile</p>
+                            <p>Clientes</p>
                         </a>
                     </li>
                     <li>
-                        <a href="typography.html">
-                            <i class="ti-text"></i>
-                            <p>Typography</p>
+                        <a href="retirada_deposito.php">
+                            <i class="ti-money"></i>
+                            <p>Retirada/Depósito</p>
                         </a>
                     </li>
                     <li>
-                        <a href="icons.html">
-                            <i class="ti-pencil-alt2"></i>
-                            <p>Icons</p>
+                        <a href="deposito.php">
+                            <i class="ti-money"></i>
+                            <p>Depósito entre contas</p>
                         </a>
                     </li>
                     <li>
-                        <a href="maps.html">
-                            <i class="ti-map"></i>
-                            <p>Maps</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="notifications.html">
-                            <i class="ti-bell"></i>
-                            <p>Notifications</p>
+                        <a href="transferencia.php">
+                            <i class="ti-money"></i>
+                            <p>Transferência</p>
                         </a>
                     </li>
                 </ul>
@@ -105,16 +133,16 @@ include 'conexao.php';
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <i class="ti-settings"></i>
-                                    <p class="notification">Ol�</p>
-                                    <p>Usu�rio</p>
+                                    <p class="notification">Olá</p>
+                                    <p><?php echo $_SESSION['usuarioNome']; ?></p>
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a href="#">Editar perfil</a>
+                                        <a href="editar_perfil.php">Editar perfil</a>
                                     </li>
                                     <li>
-                                        <a href="#">Logout</a>
+                                        <a href="logout.php">Logout</a>
                                     </li>
                                 </ul>
                             </li>
@@ -134,20 +162,22 @@ include 'conexao.php';
                                     <div class="row">
                                         <div class="col-xs-5">
                                             <div class="icon-big icon-warning text-center">
-                                                <i class="ti-server"></i>
+                                                <i class="ti-view-list-alt"></i>
                                             </div>
                                         </div>
                                         <div class="col-xs-7">
                                             <div class="numbers">
-                                                <p>Capacity</p>
-                                                105GB
+                                                <p>Bancos</p>
+                                                <?php echo $row_banco['0'] ?>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="footer">
                                         <hr />
                                         <div class="stats">
-                                            <i class="ti-reload"></i>Updated now
+                                            <a href="dashboard.php">
+                                                <i class="ti-reload"></i>Atualizar
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -159,20 +189,22 @@ include 'conexao.php';
                                     <div class="row">
                                         <div class="col-xs-5">
                                             <div class="icon-big icon-success text-center">
-                                                <i class="ti-wallet"></i>
+                                                <i class="ti-view-list-alt"></i>
                                             </div>
                                         </div>
                                         <div class="col-xs-7">
                                             <div class="numbers">
-                                                <p>Revenue</p>
-                                                $1,345
+                                                <p>Agências</p>
+                                                <?php echo $row_agencia['0'] ?>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="footer">
                                         <hr />
                                         <div class="stats">
-                                            <i class="ti-calendar"></i>Last day
+                                            <a href="dashboard.php">
+                                                <i class="ti-reload"></i>Atualizar
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -184,20 +216,22 @@ include 'conexao.php';
                                     <div class="row">
                                         <div class="col-xs-5">
                                             <div class="icon-big icon-danger text-center">
-                                                <i class="ti-pulse"></i>
+                                                <i class="ti-view-list-alt"></i>
                                             </div>
                                         </div>
                                         <div class="col-xs-7">
                                             <div class="numbers">
-                                                <p>Errors</p>
-                                                23
+                                                <p>Contas</p>
+                                                <?php echo $row_conta['0'] ?>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="footer">
                                         <hr />
                                         <div class="stats">
-                                            <i class="ti-timer"></i>In the last hour
+                                            <a href="dashboard.php">
+                                                <i class="ti-reload"></i>Atualizar
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -209,27 +243,29 @@ include 'conexao.php';
                                     <div class="row">
                                         <div class="col-xs-5">
                                             <div class="icon-big icon-info text-center">
-                                                <i class="ti-twitter-alt"></i>
+                                                <i class="ti-user"></i>
                                             </div>
                                         </div>
                                         <div class="col-xs-7">
                                             <div class="numbers">
-                                                <p>Followers</p>
-                                                +45
+                                                <p>Clientes</p>
+                                                <?php echo $row_cliente['0'] ?>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="footer">
                                         <hr />
                                         <div class="stats">
-                                            <i class="ti-reload"></i>Updated now
+                                            <a href="dashboard.php">
+                                                <i class="ti-reload"></i>Atualizar
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <!--<div class="row">
 
                         <div class="col-md-12">
                             <div class="card">
@@ -300,7 +336,7 @@ include 'conexao.php';
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
             </div>
 
@@ -342,11 +378,9 @@ include 'conexao.php';
 
     <script src="js/bootstrap-checkbox-radio.js"></script>
 
-    <script src="js/chartist.min.js"></script>
+    <!--<script src="js/chartist.min.js"></script>-->
 
     <script src="js/bootstrap-notify.js"></script>
-
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
 
     <script src="js/paper-dashboard.js"></script>
 
@@ -359,7 +393,7 @@ include 'conexao.php';
 
         	$.notify({
             	icon: 'ti-gift',
-            	message: "Welcome to <b>Paper Dashboard</b> - a beautiful Bootstrap freebie for your next project."
+            	message: "Bem vindo à <b>Dashboard do Banco Exemplo</b>."
 
             },{
                 type: 'success',

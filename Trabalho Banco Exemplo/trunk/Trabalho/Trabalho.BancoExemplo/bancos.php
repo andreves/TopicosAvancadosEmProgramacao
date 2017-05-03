@@ -1,5 +1,11 @@
 <?php
 
+session_start();
+
+if (!isset($_SESSION['usuarioID']) OR !isset($_SESSION['usuarioNome'])) {
+    header("Location:login.php");
+}
+
 include 'conexao.php';
 
 $sql = 'SELECT CODIGO, NOME, CNPJ FROM BANCO WHERE SITUACAO = 1';
@@ -9,10 +15,6 @@ if (!$result) {
     echo 'Erro MySQL: ' . mysql_error();
     exit;
 }
-
-//while ($row = mysql_fetch_assoc($result)) {
-//    echo $row['NOME'];
-//}
 
 ?>
 
@@ -37,10 +39,12 @@ if (!$result) {
     <link href="css/paper-dashboard.css" rel="stylesheet" />
 
     <link href="css/demo.css" rel="stylesheet" />
+    <link href="plugins/datatables/dataTables.bootstrap.css" rel="stylesheet" />
 
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet" />
     <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css' />
     <link href="css/themify-icons.css" rel="stylesheet" />
+    <link href="plugins/datatables/jquery.dataTables.min.css" rel="stylesheet" />
 
 </head>
 <body>
@@ -68,33 +72,39 @@ if (!$result) {
                         </a>
                     </li>
                     <li>
-                        <a href="user.html">
+                        <a href="agencias.php">
+                            <i class="ti-view-list-alt"></i>
+                            <p>AgÃªncias</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="contas.php">
+                            <i class="ti-view-list-alt"></i>
+                            <p>Contas</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="clientes.php">
                             <i class="ti-user"></i>
-                            <p>User Profile</p>
+                            <p>Clientes</p>
                         </a>
                     </li>
                     <li>
-                        <a href="typography.html">
-                            <i class="ti-text"></i>
-                            <p>Typography</p>
+                        <a href="retirada_deposito.php">
+                            <i class="ti-money"></i>
+                            <p>Retirada/DepÃ³sito</p>
                         </a>
                     </li>
                     <li>
-                        <a href="icons.html">
-                            <i class="ti-pencil-alt2"></i>
-                            <p>Icons</p>
+                        <a href="deposito.php">
+                            <i class="ti-money"></i>
+                            <p>DepÃ³sito entre contas</p>
                         </a>
                     </li>
                     <li>
-                        <a href="maps.html">
-                            <i class="ti-map"></i>
-                            <p>Maps</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="notifications.html">
-                            <i class="ti-bell"></i>
-                            <p>Notifications</p>
+                        <a href="transferencia.php">
+                            <i class="ti-money"></i>
+                            <p>TransferÃªncia</p>
                         </a>
                     </li>
                 </ul>
@@ -118,25 +128,25 @@ if (!$result) {
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <i class="ti-settings"></i>
-                                    <p class="notification">Olá</p>
-                                    <p>Usuário</p>
+                                    <p class="notification">OlÃ¡</p>
+                                    <p>
+                                        <?php echo $_SESSION['usuarioNome']; ?>
+                                    </p>
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a href="#">Editar perfil</a>
+                                        <a href="editar_perfil.php">Editar perfil</a>
                                     </li>
                                     <li>
-                                        <a href="#">Logout</a>
+                                        <a href="logout.php">Logout</a>
                                     </li>
                                 </ul>
                             </li>
                         </ul>
-
                     </div>
                 </div>
             </nav>
-
 
             <div class="content">
                 <div class="container-fluid">
@@ -149,18 +159,21 @@ if (!$result) {
                                     </div>
                                     <div class="pull-right">
                                         <a href="banco_criar.php" class="btn btn-info btn-fill btn-md btn-ws">
-                                            <i class="ti-plus"></i>Adicionar banco
+                                            <i class="ti-plus"></i> Adicionar banco
                                         </a>
                                     </div>
                                 </div>
                                 <div class="content table-responsive table-full-width">
-                                    <table class="table table-striped">
+                                    <table class="table table-striped" id="example1">
                                         <thead>
-                                            <th>Código</th>
+                                            <th>CÃ³digo</th>
                                             <th>Nome</th>
                                             <th>CNPJ</th>
-                                            <th>Ações</th>
+                                            <th>AÃ§Ãµes</th>
                                         </thead>
+                                        <!--<tbody id="listBanco">
+
+                                        </tbody>-->
                                         <tbody>
                                             <?php
                                             while ($row = mysql_fetch_assoc($result)) {
@@ -177,10 +190,10 @@ if (!$result) {
                                                 </td>
                                                 <td>
                                                     <a href="banco_editar.php?codigo=<?php echo $row['CODIGO']; ?>" class="btn btn-info btn-fill btn-sm">
-                                                        <i class="ti-pencil"></i>Editar
+                                                        <i class="ti-pencil"></i> Editar
                                                     </a>
                                                     <a href="banco_excluir.php?codigo=<?php echo $row['CODIGO']; ?>" onclick="return confirm('Deseja realmente excluir este item?')" class="btn btn-warning btn-fill btn-sm">
-                                                        <i class="ti-trash"></i>Excluir
+                                                        <i class="ti-trash"></i> Excluir
                                                     </a>
                                                 </td>
                                             </tr>
@@ -202,7 +215,7 @@ if (!$result) {
                     <div class="copyright pull-right">
                         &copy;
                         <script>document.write(new Date().getFullYear())</script>, desenvolvido por
-                        <a href="http://www.adickow.com">ADICKOW</a>
+                        <a href="http://www.adickow.com" target="_blank">ADICKOW</a>
                     </div>
                 </div>
             </footer>
@@ -211,6 +224,81 @@ if (!$result) {
 
     <script src="js/jquery-1.10.2.js" type="text/javascript"></script>
     <script src="js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="plugins/datatables/jquery.dataTables.min.js"></script>
+
+    <script>
+        $('#example1').DataTable({
+            "destroy": true,
+            "pageLength": 50,
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": false,
+            "info": true,
+            "autoWidth": false
+        });
+    </script>
+
+    <!--<script>
+
+        $(document).ready(function () {
+            if ('' != null && '' != "") {
+                var mensagem = '';
+                $.growl.notice({ title: "Sucesso!", message: mensagem });
+            }
+
+            //$('#example1').hide();
+            var cont = 1;
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: 'bancos.php',
+                contentType: 'application/json; charset=utf-8',
+                error: function () {
+                    alert("server access failure");
+                    //$.growl.error({ title: ":(", message: "Server access failure" });
+                },
+                success: function (data) {
+                    $.each(data, function (key, val) {
+
+                        var library = '<tr>' +
+                            '<td>' + cont + '</td>' +
+                            '<td>' + val.Codigo + '</td>' +
+                            '<td>' + val.Nome + '</td>' +
+                            '<td>' + val.Cnpj + '</td>' +
+                            '<td>' +
+                                '<a href="banco_editar.php/' + val.Id + '" class="btn btn-info btn-fill btn-sm">' +
+                                    'Editar' +
+                                '</a>' +
+                                '<a href="banco_excluir/' + val.Id + '" class="btn btn-warning btn-fill btn-sm" onclick="return confirm(\'Deseja realmente excluir?\');">' +
+                                    'Deletar' +
+                                '</a>' +
+                            '</td>' +
+                            '</tr>';
+
+                        $('#listBanco').append(library);
+                        cont++;
+                    });
+
+                    //$('#example1').show();
+
+                    //$('#example1').DataTable({
+                    //    "pageLength": 50,
+                    //    "paging": true,
+                    //    "lengthChange": true,
+                    //    "searching": true,
+                    //    "ordering": true,
+                    //    "info": true,
+                    //    "autoWidth": false
+                    //});
+
+                    //$('#boxCarregar').hide();
+                }
+            });
+        });
+
+    </script>-->
 
     <script src="js/bootstrap-checkbox-radio.js"></script>
 

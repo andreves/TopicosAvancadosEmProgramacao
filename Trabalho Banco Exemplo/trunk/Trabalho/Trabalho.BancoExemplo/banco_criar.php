@@ -1,8 +1,40 @@
 <?php
 
-include 'conexao.php';
+session_start();
+
+if (!isset($_SESSION['usuarioID']) OR !isset($_SESSION['usuarioNome'])) {
+    header("Location:login.php");
+}
+
+if (!empty($_POST))
+{
+    include_once 'conexao.php';
+
+    $codigo = $_POST["txtCodigo"];
+    $nome = $_POST["txtNome"];
+    $cnpj = $_POST["txtCNPJ"];
+
+    $verifica_codigo = mysql_query("SELECT * FROM BANCO WHERE CODIGO = $codigo") or die("erro ao selecionar");
+    if (mysql_num_rows($verifica_codigo) > 0){
+        echo"<script language='javascript' type='text/javascript'>alert('Este código já existe');window.location.href='banco_criar.php';</script>";
+        die();
+    }else{
+        $sql = "INSERT INTO BANCO (CODIGO, NOME, CNPJ) VALUES ('$codigo', '$nome', '$cnpj')";
+        $result = mysql_query($sql, $link);
+
+        if ($result) {
+            header("Location: bancos.php");
+            exit();
+        }
+        else {
+            echo 'Erro MySQL: ' . mysql_error();
+            exit;
+        }
+    }
+}
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -12,7 +44,7 @@ include 'conexao.php';
     <link rel="icon" type="image/png" sizes="96x96" href="img/favicon.png" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
-    <title>Criar Banco | Bancos Exemplo</title>
+    <title>Bancos | Bancos Exemplo</title>
 
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
     <meta name="viewport" content="width=device-width" />
@@ -55,33 +87,39 @@ include 'conexao.php';
                         </a>
                     </li>
                     <li>
-                        <a href="user.html">
+                        <a href="agencias.php">
+                            <i class="ti-view-list-alt"></i>
+                            <p>Agências</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="contas.php">
+                            <i class="ti-view-list-alt"></i>
+                            <p>Contas</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="clientes.php">
                             <i class="ti-user"></i>
-                            <p>User Profile</p>
+                            <p>Clientes</p>
                         </a>
                     </li>
                     <li>
-                        <a href="typography.html">
-                            <i class="ti-text"></i>
-                            <p>Typography</p>
+                        <a href="retirada_deposito.php">
+                            <i class="ti-money"></i>
+                            <p>Retirada/Depósito</p>
                         </a>
                     </li>
                     <li>
-                        <a href="icons.html">
-                            <i class="ti-pencil-alt2"></i>
-                            <p>Icons</p>
+                        <a href="deposito.php">
+                            <i class="ti-money"></i>
+                            <p>Depósito entre contas</p>
                         </a>
                     </li>
                     <li>
-                        <a href="maps.html">
-                            <i class="ti-map"></i>
-                            <p>Maps</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="notifications.html">
-                            <i class="ti-bell"></i>
-                            <p>Notifications</p>
+                        <a href="transferencia.php">
+                            <i class="ti-money"></i>
+                            <p>Transferência</p>
                         </a>
                     </li>
                 </ul>
@@ -105,25 +143,25 @@ include 'conexao.php';
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <i class="ti-settings"></i>
-                                    <p class="notification">Ol�</p>
-                                    <p>Usu�rio</p>
+                                    <p class="notification">Olá</p>
+                                    <p>
+                                        <?php echo $_SESSION['usuarioNome']; ?>
+                                    </p>
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a href="#">Editar perfil</a>
+                                        <a href="editar_perfil.php">Editar perfil</a>
                                     </li>
                                     <li>
-                                        <a href="#">Logout</a>
+                                        <a href="logout.php">Logout</a>
                                     </li>
                                 </ul>
                             </li>
                         </ul>
-
                     </div>
                 </div>
             </nav>
-
 
             <div class="content">
                 <div class="container-fluid">
@@ -134,88 +172,33 @@ include 'conexao.php';
                                     <h4 class="title">Criar banco</h4>
                                 </div>
                                 <div class="content">
-                                    <form>
-                                        <div class="row">
-                                            <div class="col-md-5">
-                                                <div class="form-group">
-                                                    <label>Company</label>
-                                                    <input type="text" class="form-control border-input" disabled placeholder="Company" value="Creative Code Inc." />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label>Username</label>
-                                                    <input type="text" class="form-control border-input" placeholder="Username" value="michael23" />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label for="exampleInputEmail1">Email address</label>
-                                                    <input type="email" class="form-control border-input" placeholder="Email" />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label>First Name</label>
-                                                    <input type="text" class="form-control border-input" placeholder="Company" value="Chet" />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label>Last Name</label>
-                                                    <input type="text" class="form-control border-input" placeholder="Last Name" value="Faker" />
-                                                </div>
-                                            </div>
-                                        </div>
-
+                                    <form method="post" action="banco_criar.php">
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <label>Address</label>
-                                                    <input type="text" class="form-control border-input" placeholder="Home Address" value="Melbourne, Australia" />
+                                                    <label>Código <span class="text-danger">*</span></label>
+                                                    <input type="text" name="txtCodigo" class="form-control border-input" onkeypress="return SomenteNumero(event)" placeholder="Digite aqui o código do banco" required />
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label>City</label>
-                                                    <input type="text" class="form-control border-input" placeholder="City" value="Melbourne" />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label>Country</label>
-                                                    <input type="text" class="form-control border-input" placeholder="Country" value="Australia" />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label>Postal Code</label>
-                                                    <input type="number" class="form-control border-input" placeholder="ZIP Code" />
-                                                </div>
-                                            </div>
-                                        </div>
-
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <label>About Me</label>
-                                                    <textarea rows="5" class="form-control border-input" placeholder="Here can be your description" value="Mike">
-                                                        Oh so, your weak rhyme
-You doubt I'll bother, reading into it
-I'll probably won't, left to my own devices
-But that's the difference in our opinions.
-                                                    </textarea>
+                                                    <label>Nome do banco <span class="text-danger">*</span></label>
+                                                    <input type="text" name="txtNome" class="form-control border-input" placeholder="Digite aqui o nome do banco" required />
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="text-center">
-                                            <button type="submit" class="btn btn-info btn-fill btn-wd">Update Profile</button>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>CNPJ <span class="text-danger">*</span></label>
+                                                    <input type="text" name="txtCNPJ" class="form-control border-input" data-inputmask="'mask': '99.999.999/9999-99'" data-mask="data-mask" placeholder="Digite aqui o CNPJ do banco" required />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <button type="submit" class="btn btn-info btn-fill btn-wd">Cadastrar</button>
                                         </div>
                                         <div class="clearfix"></div>
                                     </form>
@@ -267,13 +250,30 @@ But that's the difference in our opinions.
 
     <script src="js/bootstrap-checkbox-radio.js"></script>
 
-    <script src="js/chartist.min.js"></script>
+    <script src="js/plugins/input-mask/jquery.inputmask.js"></script>
+
+    <!--<script src="js/chartist.min.js"></script>-->
 
     <script src="js/bootstrap-notify.js"></script>
 
     <script src="js/paper-dashboard.js"></script>
 
     <script src="js/demo.js"></script>
+
+    <script>
+        $(function () {
+            $("[data-mask]").inputmask();
+        });
+
+        function SomenteNumero(e) {
+            var tecla = (window.event) ? event.keyCode : e.which;
+            if ((tecla > 47 && tecla < 58)) return true;
+            else {
+                if (tecla == 8 || tecla == 0) return true;
+                else return false;
+            }
+        }
+    </script>
 </body>
 
 </html>

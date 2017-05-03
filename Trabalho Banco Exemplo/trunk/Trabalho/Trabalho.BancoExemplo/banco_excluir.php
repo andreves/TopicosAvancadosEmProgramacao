@@ -1,5 +1,11 @@
 <?php
 
+session_start();
+
+if (!isset($_SESSION['usuarioID']) OR !isset($_SESSION['usuarioNome'])) {
+    header("Location:login.php");
+}
+
 $codigo = $_GET['codigo'];
 
 include 'conexao.php';
