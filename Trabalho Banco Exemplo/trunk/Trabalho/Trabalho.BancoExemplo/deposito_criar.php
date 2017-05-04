@@ -61,7 +61,10 @@ if (!empty($_POST))
         $result_valor = mysql_query($sql, $link);
 
         if ($result) {
-            header("Location: deposito.php");
+            if ($conn->query($sql) === TRUE) {
+                $last_id = $conn->insert_id;
+            }
+            header("Location: deposito_efetuado_sucesso.php?id=$last_id");
             exit();
         }
         else {

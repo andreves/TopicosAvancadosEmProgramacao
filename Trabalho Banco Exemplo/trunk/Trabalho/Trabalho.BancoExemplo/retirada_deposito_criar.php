@@ -82,8 +82,17 @@ if (!empty($_POST))
         $result_valor = mysql_query($sql, $link);
 
         if ($result) {
-            header("Location: retirada_deposito.php");
-            exit();
+            if ($conn->query($sql) === TRUE) {
+                $last_id = $conn->insert_id;
+            }
+
+            if ($tipo == "Saque") {
+                header("Location: saque_efetuado.php?id=$last_id");
+                exit();
+            }else{
+                header("Location: deposito_efetuado.php?id=$last_id");
+                exit();
+            }
         }
         else {
             echo 'Erro MySQL: ' . mysql_error();

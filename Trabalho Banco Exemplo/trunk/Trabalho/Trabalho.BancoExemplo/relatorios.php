@@ -8,42 +8,14 @@ if (!isset($_SESSION['usuarioID']) OR !isset($_SESSION['usuarioNome'])) {
 
 include_once 'conexao.php';
 
-$get_numero = $_GET['numero'];
-
-$sql = "SELECT NUMERO, NOME, ENDERECO, CIDADE, ESTADO, CEP, BANCO_CODIGO FROM AGENCIA WHERE NUMERO = $get_numero";
-$query = mysql_query($sql, $link);
-$row_query = mysql_fetch_row($query);
-
 $sql = 'SELECT CODIGO, NOME FROM BANCO WHERE SITUACAO = 1 ORDER BY NOME';
 $lista_banco = mysql_query($sql, $link);
 
-if (!empty($_POST))
-{
-    $numero_agencia = $_POST["txtNumeroAgencia"];
-    $numero = $_POST["txtNumero"];
-    $nome = $_POST["txtNome"];
-    $endereco = $_POST["txtEndereco"];
-    $cidade = $_POST["txtCidade"];
-    $estado = $_POST["txtEstado"];
-    $cep = $_POST["txtCEP"];
-    $banco_codigo = $_POST["txtBancoCodigo"];
-
-    //fazer select para ver se já existe o o codigo
-
-    $sql = "UPDATE AGENCIA SET NUMERO = '$numero', NOME = '$nome', ENDERECO = '$endereco', CIDADE = '$cidade', ESTADO = '$estado', CEP = '$cep', BANCO_CODIGO = $banco_codigo WHERE NUMERO = $numero_agencia";
-    $result = mysql_query($sql, $link);
-
-    if ($result) {
-        header("Location: agencias.php");
-        exit();
-    }
-    else {
-        echo 'Erro MySQL: ' . mysql_error();
-        exit;
-    }
-}
+$sql = 'SELECT CIDADE FROM CLIENTE GROUP BY CIDADE';
+$lista_cidade = mysql_query($sql, $link);
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -53,7 +25,7 @@ if (!empty($_POST))
     <link rel="icon" type="image/png" sizes="96x96" href="img/favicon.png" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
-    <title>Agências | Bancos Exemplo</title>
+    <title>Relatórios | Bancos Exemplo</title>
 
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
     <meta name="viewport" content="width=device-width" />
@@ -65,10 +37,12 @@ if (!empty($_POST))
     <link href="css/paper-dashboard.css" rel="stylesheet" />
 
     <link href="css/demo.css" rel="stylesheet" />
+    <link href="plugins/datatables/dataTables.bootstrap.css" rel="stylesheet" />
 
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet" />
     <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css' />
     <link href="css/themify-icons.css" rel="stylesheet" />
+    <link href="plugins/datatables/jquery.dataTables.min.css" rel="stylesheet" />
 
 </head>
 <body>
@@ -95,7 +69,7 @@ if (!empty($_POST))
                             <p>Bancos</p>
                         </a>
                     </li>
-                    <li class="active">
+                    <li>
                         <a href="agencias.php">
                             <i class="ti-view-list-alt"></i>
                             <p>Agências</p>
@@ -131,6 +105,12 @@ if (!empty($_POST))
                             <p>Transferência</p>
                         </a>
                     </li>
+                    <li class="active">
+                        <a href="relatorios.php">
+                            <i class="ti-money"></i>
+                            <p>Relatórios</p>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -145,7 +125,7 @@ if (!empty($_POST))
                             <span class="icon-bar bar2"></span>
                             <span class="icon-bar bar3"></span>
                         </button>
-                        <a class="navbar-brand" href="#">Agências</a>
+                        <a class="navbar-brand" href="#">Relatórios</a>
                     </div>
                     <div class="collapse navbar-collapse">
                         <ul class="nav navbar-nav navbar-right">
@@ -153,7 +133,9 @@ if (!empty($_POST))
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <i class="ti-settings"></i>
                                     <p class="notification">Olá</p>
-                                    <p><?php echo $_SESSION['usuarioNome']; ?></p>
+                                    <p>
+                                        <?php echo $_SESSION['usuarioNome']; ?>
+                                    </p>
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
@@ -166,6 +148,7 @@ if (!empty($_POST))
                                 </ul>
                             </li>
                         </ul>
+
                     </div>
                 </div>
             </nav>
@@ -173,91 +156,86 @@ if (!empty($_POST))
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-lg-12 col-md-12">
+                        <div class="col-md-12">
                             <div class="card">
-                                <div class="header">
-                                    <h4 class="title">Editar agência</h4>
+                                <div class="header" style="padding-bottom: 70px;">
+                                    <div class="pull-left">
+                                        <h4 class="title">Relatórios</h4>
+                                    </div>
+                                    <!--<div class="pull-right">
+                                        <a href="agencia_criar.php" class="btn btn-info btn-fill btn-md btn-ws">
+                                            <i class="ti-plus"></i>Adicionar agência
+                                        </a>
+                                    </div>-->
                                 </div>
-                                <div class="content">
-                                    <form method="post" action="agencia_editar.php">
-                                        <input type="hidden" name="txtNumeroAgencia" value="<?php echo $row_query[0]; ?>" />
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label>Número <span class="text-danger">*</span></label>
-                                                    <input type="text" name="txtNumero" class="form-control border-input" value="<?php echo $row_query[0]; ?>" placeholder="Digite aqui o número da agência" required />
-                                                </div>
+                                <div class="content table-responsive table-full-width">
+                                    <div class="row">
+                                        <button class="btn btn-info btn-fill btn-md btn-ws" data-toggle="collapse" data-target="#bancos">1 - Relatório de bancos</button>
+                                        <div class="col-md-12">
+                                            <div id="bancos" class="collapse">
+                                                <p>Clique no botão abaixo para imprimir o relatório do bancos:</p>
+                                                <a href="pdf_banco.php" target="_blank" class="btn btn-default btn-flat btn-xs">
+                                                    <i class="ti-printer"></i> Imprimir relatório
+                                                </a>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <button class="btn btn-info btn-fill btn-md btn-ws" data-toggle="collapse" data-target="#agencias">2 - Relatório de agências</button>
+                                        <div class="col-md-12">
+                                            <div id="agencias" class="collapse">
+                                                <p>Selecione o banco e clique no botão abaixo para imprimir o relatório do agências:</p>
+                                                <div class="row">
+                                            <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label>Nome da agência <span class="text-danger">*</span></label>
-                                                    <input type="text" name="txtNome" class="form-control border-input" value="<?php echo $row_query[1]; ?>" placeholder="Digite aqui o nome da agência" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label>Endereço</label>
-                                                    <input type="text" name="txtEndereco" class="form-control border-input" value="<?php echo $row_query[2]; ?>" placeholder="Digite aqui o Endereço" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label>Cidade</label>
-                                                    <input type="text" name="txtCidade" class="form-control border-input" value="<?php echo $row_query[3]; ?>" placeholder="Digite aqui o Cidade" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label>Estado</label>
-                                                    <input type="text" name="txtEstado" class="form-control border-input" value="<?php echo $row_query[4]; ?>" maxlength="2" style="text-transform: uppercase;" placeholder="Digite aqui o Estado (apenas sigla)" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label>CEP</label>
-                                                    <input type="text" name="txtCEP" class="form-control border-input" value="<?php echo $row_query[5]; ?>" data-inputmask="'mask': '99999-999'" data-mask="data-mask" placeholder="Digite aqui o CEP" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label>Banco</label>
-                                                    <select class="form-control border-input" name="txtBancoCodigo">
+                                                    <select class="form-control border-input" id="txtBancoAgencia" name="txtBancoAgencia" required>
                                                         <option value="">Selecione...</option>
                                                         <?php
                                                         while ($row = mysql_fetch_assoc($lista_banco)) {
-                                                            if ($row['CODIGO'] == $row_query[6]) {
-                                                        ?>
-                                                        <option value="<?php echo $row['CODIGO'];?>" selected><?php echo $row['NOME'];?></option>
-                                                        <?php
-                                                            }
-                                                            else {
                                                         ?>
                                                         <option value="<?php echo $row['CODIGO'];?>"><?php echo $row['NOME'];?></option>
                                                         <?php
-                                                            }
                                                         }
                                                         ?>
                                                     </select>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div>
-                                            <button type="submit" class="btn btn-info btn-fill btn-wd">Salvar</button>
+                                                <a id="gerar_pdf_agencia" target="_blank" class="btn btn-default btn-flat btn-xs">
+                                                    <i class="ti-printer"></i> Imprimir relatório
+                                                </a>
+                                            </div>
                                         </div>
-                                        <div class="clearfix"></div>
-                                    </form>
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <button class="btn btn-info btn-fill btn-md btn-ws" data-toggle="collapse" data-target="#cliente_cidades">3 - Relatório de clientes por cidade</button>
+                                        <div class="col-md-12">
+                                            <div id="cliente_cidades" class="collapse">
+                                                <p>Selecione o cidade e clique no botão abaixo para imprimir o relatório de clientes:</p>
+                                                <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <select class="form-control border-input" id="txtCidadeCliente" name="txtCidadeCliente" required>
+                                                        <option value="">Selecione...</option>
+                                                        <?php
+                                                        while ($row = mysql_fetch_assoc($lista_cidade)) {
+                                                        ?>
+                                                        <option value="<?php echo $row['CIDADE'];?>"><?php echo $row['CIDADE'];?></option>
+                                                        <?php
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                                <a id="gerar_pdf_cidade" target="_blank" class="btn btn-default btn-flat btn-xs">
+                                                    <i class="ti-printer"></i> Imprimir relatório
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -270,34 +248,37 @@ if (!empty($_POST))
                     <div class="copyright pull-right">
                         &copy;
                         <script>document.write(new Date().getFullYear())</script>, desenvolvido por
-                        <a href="http://www.adickow.com">ADICKOW</a>
+                        <a href="http://www.adickow.com" target="_blank">ADICKOW</a>
                     </div>
                 </div>
             </footer>
-
         </div>
     </div>
 
     <script src="js/jquery-1.10.2.js" type="text/javascript"></script>
     <script src="js/bootstrap.min.js" type="text/javascript"></script>
 
+    <script>
+        $("#txtBancoAgencia").change(function () {
+            var _banco = $("#txtBancoAgencia").val();
+            $("#gerar_pdf_agencia").attr("href", "pdf_agencia.php?banco=" + _banco);
+        });
+
+        $("#txtCidadeCliente").change(function () {
+            var _cidade = $("#txtCidadeCliente").val();
+            $("#gerar_pdf_cidade").attr("href", "pdf_cidade_cliente.php?cidade=" + _cidade);
+        });
+    </script>
+
     <script src="js/bootstrap-checkbox-radio.js"></script>
 
-    <script src="js/plugins/input-mask/jquery.inputmask.js"></script>
-
-    <!--<script src="js/chartist.min.js"></script>-->
+    <script src="js/chartist.min.js"></script>
 
     <script src="js/bootstrap-notify.js"></script>
 
     <script src="js/paper-dashboard.js"></script>
 
     <script src="js/demo.js"></script>
-
-    <script>
-        $(function () {
-            $("[data-mask]").inputmask();
-        });
-    </script>
 </body>
 
 </html>
